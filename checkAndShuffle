@@ -1,0 +1,31 @@
+window = 5
+n = 32
+seqArray = []
+totalDebSequences = []
+
+
+def is_deb_seq(seq):
+    size = len(seq)
+    seq += seq[0:window-1]
+    for i in range(size - window + 1):
+        sub_string = seq[i:i + window]
+        if sub_string in seqArray:
+            return False
+        else:
+            seqArray.append(sub_string)
+    print("this is a deb seq! {}".format(seq))
+    return True
+
+
+def shuffle_deb_seq(given_seq):
+    shuffled_sequence = [None] * n
+    for i in range(n):
+        if i < 16:
+            shuffled_sequence[i*2] = given_seq[i]
+        else:
+            multiplier = abs(n-(2*i)) + 1
+            shuffled_sequence[multiplier] = given_seq[i]
+    shuffled_sequence = ''.join(shuffled_sequence)
+    print(shuffled_sequence)
+    if shuffled_sequence == given_seq:
+        print("neat! this sequence shuffles out to its original form!")
