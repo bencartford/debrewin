@@ -2,14 +2,13 @@
 
 /**
  * Program Notes:
- * - consider passing k as argument to dfs() and numP...() so it's not recalculated on every loop
- * - be pretty cool if it took a generic, but that's not really what I'm going for in this program
+ * - consider passing k as argument to dfs() and numP...() so it's not recalculated on every loop 
+ * - be pretty cool if it took a generic, but that's not really what I'm going for in this program 
  * - ^ shuffles in particular
  * 
  * TODO: 
- * - Write inShuffle()
- * - Write isDeBruijn()
- * - Think about a BST based approach to generating not just 1, but all De Bruijn sequences 
+ * - Write isDeBruijn() 
+ * - Think about a BST based approach to generating not just 1, but all De Bruijn sequences
  */
 
 
@@ -32,20 +31,27 @@ public class Main {
    */
   public static void main(String[] args) {
 
-    final String A = "01"; // Alphabet
-    int n = 5 ; // Window length
+    final String A = "abc"; // Alphabet
+    int n = 2; // Window length
 
     System.out.println("For an alphabet \"" + A + "\" and window of " + n + ":");
     System.out.println(
         "There are " + numPossibleDBSequences(n, A.length()) + " valid De Bruijn sequences");
     System.out.println("One such sequence: " + deBruijn(n, A));
 
+    System.out.println(outShuffle("11101000"));
+    System.out.println(outShufflesToSelf("11101000"));
+    System.out.println(inShuffle("11101000"));
+    System.out.println(inShufflesToSelf("11101000"));
+    System.out.println(rotateRight("11101000", 3));
+    System.out.println(rotateLeft("11101000", 3));
+    
   }
 
   /**
    * Calculates the number of possible De Bruijn sequences considering the given window size and
-   * alphabet length. Not very meaningful for even larger single digit values of n and k, due to 
-   * the limited maximum integer length in Java, and the growth rate for this function.
+   * alphabet length. Not very meaningful for even larger single digit values of n and k, due to the
+   * limited maximum integer length in Java, and the growth rate for this function.
    * 
    * @param n the window length
    * @param k the alphabet length
@@ -71,9 +77,9 @@ public class Main {
    * 
    * @param n window size
    * @param A alphabet, as String
-   * @return a valid De Bruijn sequence, as a String 
+   * @return a valid De Bruijn sequence, as a String
    * 
-   * Adapted from https://www.geeksforgeeks.org/de-bruijn-sequence-set-1/
+   *         Adapted from https://www.geeksforgeeks.org/de-bruijn-sequence-set-1/
    */
   public static String deBruijn(int n, String A) {
 
@@ -96,22 +102,22 @@ public class Main {
   }
 
   /**
-   * Recursive helper method to deBruijn(), 
-   * Literally just a depth-first search where no edge is traversed twice (Euler Circuit style)
-   * Constructs graph of k^(n-1) nodes, k edges leaving each node
+   * Recursive helper method to deBruijn(), Literally just a depth-first search where no edge is
+   * traversed twice (Euler Circuit style) Constructs graph of k^(n-1) nodes, k edges leaving each
+   * node
    * 
-   * O(nodes + edges) I think --could be better 
+   * O(nodes + edges) I think --could be better
    * 
    * @param node
    * @param A
    * 
-   * Adapted from https://www.geeksforgeeks.org/de-bruijn-sequence-set-1/
+   *             Adapted from https://www.geeksforgeeks.org/de-bruijn-sequence-set-1/
    */
   private static void dfs(String node, String A) {
 
     int k = A.length();
 
-    // iteratively add the alphabet to the string 
+    // iteratively add the alphabet to the string
     // check each time if the string is now novel, if so, add it to the set of seen strings
     // then make recursive call, passing in string just added to seen, but missing its first char
 
@@ -132,13 +138,13 @@ public class Main {
   }
 
   /**
-   * Helper method to deBruijn. Simply returns a string of the inputed character n times. 
+   * Helper method to deBruijn. Simply returns a string of the inputed character n times.
    * 
-   * @param n the number of times to copy the given char
+   * @param n      the number of times to copy the given char
    * @param charAt the character to be copied
    * @return a string with only the char charAt, copied n times.
    * 
-   * Adapted from https://www.geeksforgeeks.org/de-bruijn-sequence-set-1/
+   *         Adapted from https://www.geeksforgeeks.org/de-bruijn-sequence-set-1/
    */
   private static String string(int n, char charAt) {
 
@@ -151,14 +157,14 @@ public class Main {
   }
 
   /**
-   * Determines whether the given sequence is a valid De Bruijn, for the given window
-   * Not yet existent, obviously. 
+   * Determines whether the given sequence is a valid De Bruijn, for the given window Not yet
+   * existent, obviously.
    * 
-   * See Olivia's (Albertsofc) Python implementation. (Perhaps I'll get around to stealing it, 
+   * See Olivia's (Albertsofc) Python implementation. (Perhaps I'll get around to stealing it,
    * adapting it to Java)
    * 
    * @param sequence the sequence to check
-   * @param n the window size
+   * @param n        the window size
    * @return true if the inputed sequence is a De Bruijn, false otherwise
    */
   public static boolean isDeBruijn(String sequence, int n) {
@@ -185,38 +191,156 @@ public class Main {
   }
 
   /**
-   * Performs a perfect out shuffle, following the formula (length k, index i) :
-   * if (i < k/2): i -> 2i
-   * if (i >= k/2): i -> |k - 2i| + 1
-   * 
-   * Whether the exception is necessary at all, and what the inShuffle() would look like, are 
-   * questions that will be answered soon.
+   * Performs a perfect out shuffle, following the formula (length k, index i) : if (i < k/2): i ->
+   * 2i; if (i >= k/2): i -> 2i - k + 1
    * 
    * @param str the set to be shuffled
    * @return the shuffled set, as a String
    * @throws Exception in case an invalid String is passed
    */
-  private static String outShuffle(String str) throws Exception {
-    
-    // Honest to god not sure if this is true yet
+  private static String outShuffle(String str) {
+
+    // Only accept even strings, as this is implied in the definition of "out shuffle"
     if (str.length() % 2 != 0)
-      throw new Exception("Set must be even for an out shuffle");
-    
+      return null; // Easier than exception handling
+
     int n = str.length() / 2;
     char[] newStr = new char[str.length()];
     String retStr = "";
-    
+
     // Handle first half of domain
-    for (int i = 0; i < n; i++) 
-      newStr[2*i] = str.charAt(i);
-   
+    for (int i = 0; i < n; i++)
+      newStr[2 * i] = str.charAt(i);
+
     // Handle second half of domain
-    for (int i = n; i <= 2 * n; i++) 
-      newStr[(2 * n) - (2 * i) + 1] = str.charAt(i);
-    
-    // Convert from char Array to String 
+    for (int i = n; i < 2 * n; i++)
+      newStr[(2 * i) - (2 * n) + 1] = str.charAt(i);
+
+    // Convert from char Array to String
     for (int i = 0; i < newStr.length; i++)
       retStr += newStr[i];
+
+    return retStr;
+
+  }
+
+  /**
+   * Performs a perfect in shuffle, following the formula (length k, index i) : if (i < k/2): i -> 2i
+   * + 1; if (i >= k/2): i -> 2i - k
+   * 
+   * @param str the set to be shuffled
+   * @return the shuffled set, as a String
+   * @throws Exception in case an invalid String is passed
+   */
+  private static String inShuffle(String str) {
+
+    // Only accept even strings, as this is implied in the definition of "in shuffle"
+    if (str.length() % 2 != 0)
+      return null; // Easier than exception handling
+
+    int n = str.length() / 2;
+    char[] newStr = new char[str.length()];
+    String retStr = "";
+
+    // Handle first half of domain
+    for (int i = 0; i < n; i++)
+      newStr[(2 * i) + 1] = str.charAt(i);
+
+    // Handle second half of domain
+    for (int i = n; i < 2 * n; i++)
+      newStr[(2 * i) - (2 * n)] = str.charAt(i);
+
+    // Convert from char Array to String
+    for (int i = 0; i < newStr.length; i++)
+      retStr += newStr[i];
+
+    return retStr;
+
+  }
+
+  /**
+   * Checks if the inputed string would retain its order after being out-shuffled
+   * O(n) for true return, O(1) for false (a bit epic)
+   * 
+   * @param str the string to be checked
+   * @return true if the string would out-shuffle to its original order, false otherwise
+   */
+  private static boolean outShufflesToSelf(String str) {
+    
+    int n = str.length() / 2;
+    
+    // Handle first half of domain
+    for (int i = 0; i < n; i++)
+      if (str.charAt(i) != (str.charAt(2 * i)))
+        return false;
+
+    // Handle second half of domain (shit ain't transitive)
+    for (int i = n; i < 2 * n; i++)
+      if (str.charAt(i) != (str.charAt((2 * i) - (2 * n) + 1)))
+        return false;
+    
+    return true;
+    
+  }
+
+  /**
+   * Checks if the inputed string would retain its order after being in-shuffled
+   * O(n) for true return, O(1) for false (a bit epic)
+   * 
+   * @param str the string to be checked
+   * @return true if the string would in-shuffle to its original order, false otherwise
+   */
+  private static boolean inShufflesToSelf(String str) {
+
+    int n = str.length() / 2;
+
+    // Handle first half of domain
+    for (int i = 0; i < n; i++)
+      if (str.charAt(i) != (str.charAt((2 * i) + 1)))
+        return false;
+
+    // Handle second half of domain (shit ain't transitive)
+    for (int i = n; i < 2 * n; i++)
+      if (str.charAt(i) != (str.charAt((2 * i) - (2 * n))))
+        return false;
+
+    return true;
+
+  }
+
+  /**
+   * Rotate a specified string right a specified amount
+   * O(1)
+   * 
+   * @param str the string to be rotated
+   * @param rot the amount to rotate by
+   * @return the string, rotated the specified amount
+   */
+  private static String rotateRight(String str, int rot) {
+    
+    int cutPoint = str.length() - (rot % str.length()); // adjusts for rotations > str length
+    String retStr = "";
+    
+    retStr = str.substring(cutPoint) + str.substring(0, cutPoint);
+    
+    return retStr;
+    
+  }
+  
+  /**
+   * Rotate a specified string left a specified amount
+   * O(1)
+   * 
+   * @param str the string to be rotated
+   * @param rot the amount to rotate by
+   * @return the string, rotated the specified amount
+   */
+  private static String rotateLeft(String str, int rot) {
+    
+    int cutPoint = rot % str.length(); // adjusts for rotations > str length
+    String retStr = "";
+    
+    retStr = str.substring(cutPoint) + str.substring(0, cutPoint);
     
     return retStr;
     
