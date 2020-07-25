@@ -5,6 +5,7 @@
  * - consider passing k as argument to dfs() and numP...() so it's not recalculated on every loop 
  * - be pretty cool if it took a generic, but that's not really what I'm going for in this program 
  * - ^ shuffles in particular
+ * - I use "shift" and "rotate" interchangeably
  * 
  * TODO: 
  * - Write isDeBruijn() 
@@ -31,20 +32,16 @@ public class Main {
    */
   public static void main(String[] args) {
 
-    final String A = "abc"; // Alphabet
-    int n = 2; // Window length
+    final String A = "01"; // Alphabet
+    int n = 4; // Window length
 
     System.out.println("For an alphabet \"" + A + "\" and window of " + n + ":");
     System.out.println(
         "There are " + numPossibleDBSequences(n, A.length()) + " valid De Bruijn sequences");
     System.out.println("One such sequence: " + deBruijn(n, A));
-
-    System.out.println(outShuffle("11101000"));
-    System.out.println(outShufflesToSelf("11101000"));
-    System.out.println(inShuffle("11101000"));
-    System.out.println(inShufflesToSelf("11101000"));
-    System.out.println(rotateRight("11101000", 3));
-    System.out.println(rotateLeft("11101000", 3));
+    
+    allRotShuffleToSelf(deBruijn(n, A));
+    allRotShuffleShiftToSelf("11101000");
     
   }
 
@@ -169,6 +166,19 @@ public class Main {
    */
   public static boolean isDeBruijn(String sequence, int n) {
 
+    // String superseq = sequence + sequence.substring(0, n - 1);
+    // String subseq = "";
+    //
+    // for (int i = 0; i < (sequence.length() - n + 1); i++) {
+    //
+    // subseq = superseq.substring(i, i + n);
+    //
+    // if (sequence.contains(subseq)) {
+    // return false;
+    // } else ()
+    //
+    // }
+    
     return false;
 
   }
@@ -346,4 +356,74 @@ public class Main {
     
   }
   
+  /**
+   * Checks to see if rotated versions of the given string shuffle (in or out) back to themselves,
+   * prints results
+   * 
+   * *if you're wondering whether you want this one or allRotShuffleShiftToSelf(), you probably want
+   * this one.
+   * 
+   * @param str
+   */
+  private static void allRotShuffleToSelf(String str) {
+
+    System.out.println("\nFor the sequence " + str
+        + ",\nthe following right-shifts shuffle back to themselves:");
+
+    String rot;
+    
+    for (int i = 0; i < str.length(); i++) {
+
+      rot = rotateRight(str, i);
+
+      if (outShufflesToSelf(rot))
+        System.out.println(rot + " (" + i + ") " + "- OUT");
+
+      if (inShufflesToSelf(rot))
+        System.out.println(rot + " (" + i + ") " + " - IN");
+
+    }
+
+  }
+
+  /**
+   * Checks to see if rotated versions of the given string shuffle, then rotate back to themselves,
+   * prints results 
+   * 
+   * Performs the following operation, specifically:
+   * rotate right i characters > shuffle > rotate left i characters (back to rotated) > compare to
+   * original rotation
+   * 
+   * Interestingly, the left rotate only gets it back to the state of the right rotate, not back to
+   * the original string.
+   * 
+   * @param str the string to be checked
+   */
+  private static void allRotShuffleShiftToSelf(String str) {
+
+    System.out.println("\nFor the sequence " + str
+        + ", \nthe following shifts \"shuffle-shift\" back to themselves:");
+
+    for (int i = 0; i < str.length(); i++) {
+
+      System.out.print(i + " - ");
+
+      if (rotateLeft(outShuffle(rotateRight(str, i)), 2 * i).equals(str))
+        System.out.print(" OUT");
+
+      if (rotateLeft(inShuffle(rotateRight(str, i)), 2 * i).equals(str))
+        System.out.print(" IN");
+
+      System.out.println();
+
+    }
+
+  }
+
 }
+
+
+
+
+
+
