@@ -1,5 +1,3 @@
-deb_seq_array = []
-totalNLengthSequences = []
 
 # hi! thanks for checking this out. here's a quick runthrough of how the program works
 # declare an instance of DebSequence like this: my_sequence = DebSequence(n,k)
@@ -20,6 +18,9 @@ totalNLengthSequences = []
 #       - making the algorithm exclude duplicates (defined as "deb sequences that are the same as each other, but are
 #           shifted so they don't appear to be the same")
 #       - making the calls for is_deb_seq and shuffle_seq their own class 
+
+deb_seq_array = []
+totalNLengthSequences = []
 
 
 class DebSequence:
