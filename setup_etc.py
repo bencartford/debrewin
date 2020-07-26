@@ -49,9 +49,11 @@ class DebSequence:
                 preexisting_sequences.append(sub_string)
         return True
 
-    # this shuffles the deb sequence using the *out shuffle* method. it uses the algorithm @reed made:
+    # this shuffles the deb sequence using the *out shuffle* method. it uses the algorithm @reed made, but i modified it to work for odd len strings as well.
+    # there's probably a more direct way to do this, but the following works for now:
     # if (i <  k/2): i -> 2i
-    # if (i >= k/2): i -> 2i - k + 1
+    # if (i >= k/2 and len is even): i -> | 2i - k | + 1
+    # if (i >= k/2 and len is odd): i -> | 2i - k |
     @staticmethod
     def shuffle_seq(given_seq):
         max_length = len(given_seq)
