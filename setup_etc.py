@@ -1,4 +1,3 @@
-
 # hi! thanks for checking this out. here's a quick runthrough of how the program works
 # declare an instance of DebSequence like this: my_sequence = DebSequence(n,k)
 #   you will automatically get back all of the debruijns sequences the alg has calculated
@@ -17,8 +16,10 @@
 #       - making the algorithm all encompassing (getting all possible sequences with a given n, k)
 #       - making the algorithm exclude duplicates (defined as "deb sequences that are the same as each other, but are
 #           shifted so they don't appear to be the same")
-#       - making the calls for is_deb_seq and shuffle_seq their own class 
+#       - making the calls for is_deb_seq and shuffle_seq their own class
 
+
+import math
 deb_seq_array = []
 totalNLengthSequences = []
 
@@ -55,12 +56,18 @@ class DebSequence:
         max_length = len(given_seq)
         shuffled_sequence = [None] * max_length
         for i in range(max_length):
-            if i < (max_length / 2):
+            if i < math.ceil(float(max_length) / 2):
                 shuffled_sequence[i*2] = given_seq[i]
+                print('i ({}) < THREE -> {}'.format(i, (i*2)))
             else:
-                multiplier = abs(max_length - (2 * i)) + 1
+                if max_length % 2 == 0:
+                    multiplier = abs(max_length - (2 * i)) + 1
+                else:
+                    multiplier = abs(max_length - (2 * i))
                 shuffled_sequence[multiplier] = given_seq[i]
-        shuffled_sequence = ''.join(shuffled_sequence)  # opportunity for exception checker
+        if None in shuffled_sequence:
+            return 'Shuffled sequence contains None:( {}'.format(shuffled_sequence)
+        shuffled_sequence = ''.join(shuffled_sequence)
         if shuffled_sequence == given_seq:
             print("they're the same!")
         return shuffled_sequence
@@ -76,7 +83,8 @@ class DebSequence:
                 shifted_seq_array[0] = seq[i]
             else:
                 shifted_seq_array[i+1] = seq[i]
-        return shifted_seq_array
+        shifted_seq_string = ''.join(shifted_seq_array)
+        return shifted_seq_string
 
     # This is the method that's called once the individual window sequences are added onto each other and have reached
     # the max length of the sequence. It combines the array of individual chars into one string, and then adds that onto
@@ -90,13 +98,13 @@ class DebSequence:
 
     # Function to generate all possible string iterations of a the variable in a given window size
     @staticmethod
-    def make_unique_window_sequences(max_size, arr, current_size, alphabet_array):
-        if current_size == max_size:
-            DebSequence.append_list_of_total_seq(arr, max_size)
+    def make_unique_window_sequences(window_size, arr, current_size, alphabet_array):
+        if current_size == window_size:
+            DebSequence.append_list_of_total_seq(arr, window_size)
             return totalNLengthSequences
         for number in alphabet_array:
             arr[current_size] = number
-            DebSequence.make_unique_window_sequences(max_size, arr, current_size + 1, alphabet_array)
+            DebSequence.make_unique_window_sequences(window_size, arr, current_size + 1, alphabet_array)
 
     # Gets what's created in this^. You need to separate it into 2 defs because ^ is iterative.
     @staticmethod
