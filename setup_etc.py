@@ -9,10 +9,11 @@
 # if you want to shuffle the sequence, make an instance of DebruijnSequence, and then do
 # my_sequence.shuffle_seq('the sequence you want to shuffle')
 #   TODO: make this in the same class the checker is in (common denom: shouldn't need to declare instance of debseq)
+#   it can shuffle odd len sequences too now!
 
 
 # things being worked on right now (in decreasing priority):
-#       - making unit tests
+#       - making unit tests (see test_setup_etc.py; some are already done)
 #       - making the algorithm all encompassing (getting all possible sequences with a given n, k)
 #       - making the algorithm exclude duplicates (defined as "deb sequences that are the same as each other, but are
 #           shifted so they don't appear to be the same")
