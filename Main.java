@@ -38,19 +38,23 @@ public class Main {
     final String A = "01"; // Alphabet
     int k = A.length();
     int n = 4; // Window length
+    
+    DBGraph dbg = new DBGraph(A, n);
 
     System.out.println("For an alphabet \"" + A + "\" and window of " + n + ":");
-    System.out.println(
-        "There are " + numPossibleDBSequences(n, k) + " valid De Bruijn sequences");
+    
+    System.out.println("There are " + numDBSequences(n, k) + " valid De Bruijn sequences");
+
     System.out.println("One such sequence: " + deBruijn(n, A, k));
+
+    System.out.println("All such sequences:");
+    dbg.printAllPaths();
 
     // allRotShuffleToSelf(deBruijn(n, A));
     // allRotShuffleShiftToSelf("11101000");
     // allRotShuffleShiftToSelf("0111101011001000");
 
-    DBGraph dbg = new DBGraph(A, n);
-    // dbg.printMatrix();
-    dbg.printAllPaths();
+    // dbg.printMatrix();    
     
   }
 
@@ -63,7 +67,7 @@ public class Main {
    * @param k the alphabet length
    * @return the number of possible sequences or roughly the largest possible value.
    */
-  public static String numPossibleDBSequences(int n, int k) {
+  public static String numDBSequences(int n, int k) {
 
     long l = (long) (Math.pow(factorial(k), Math.pow(k, n - 1)) / Math.pow(k, n));
 
