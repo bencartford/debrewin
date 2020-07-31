@@ -9,7 +9,10 @@
  * 
  * TODO: 
  * - Write isDeBruijn() 
- * - Think about a BST based approach to generating not just 1, but all De Bruijn sequences
+ * 
+ * isDeb() implementation: generate array of all combinations for n,k. In for loop compare substring
+ * to things in list, checking them off as you go. With binary search, should be O(nlogn).
+ * ...It's not elegant, not clever, but quite comprehensible, and not too slow. 
  */
 
 
@@ -33,15 +36,21 @@ public class Main {
   public static void main(String[] args) {
 
     final String A = "01"; // Alphabet
+    int k = A.length();
     int n = 4; // Window length
 
     System.out.println("For an alphabet \"" + A + "\" and window of " + n + ":");
     System.out.println(
-        "There are " + numPossibleDBSequences(n, A.length()) + " valid De Bruijn sequences");
-    System.out.println("One such sequence: " + deBruijn(n, A));
-    
-    allRotShuffleToSelf(deBruijn(n, A));
-    allRotShuffleShiftToSelf("11101000");
+        "There are " + numPossibleDBSequences(n, k) + " valid De Bruijn sequences");
+    System.out.println("One such sequence: " + deBruijn(n, A, k));
+
+    // allRotShuffleToSelf(deBruijn(n, A));
+    // allRotShuffleShiftToSelf("11101000");
+    // allRotShuffleShiftToSelf("0111101011001000");
+
+    DBGraph dbg = new DBGraph(A, n);
+    // dbg.printMatrix();
+    dbg.printAllPaths();
     
   }
 
@@ -78,14 +87,12 @@ public class Main {
    * 
    *         Adapted from https://www.geeksforgeeks.org/de-bruijn-sequence-set-1/
    */
-  public static String deBruijn(int n, String A) {
-
-    int k = A.length(); // the length of the alphabet
+  public static String deBruijn(int n, String A, int k) {
 
     // [use .clear() method on seen and edges if will be used multiple times in this program]
 
     String startingNode = string(n - 1, A.charAt(0));
-    dfs(startingNode, A);
+    dfs(startingNode, A, k);
 
     String S = "";
 
@@ -110,9 +117,7 @@ public class Main {
    * 
    *             Adapted from https://www.geeksforgeeks.org/de-bruijn-sequence-set-1/
    */
-  private static void dfs(String node, String A) {
-
-    int k = A.length();
+  private static void dfs(String node, String A, int k) {
 
     // iteratively add the alphabet to the string
     // check each time if the string is now novel, if so, add it to the set of seen strings
@@ -125,7 +130,7 @@ public class Main {
       if (!seen.contains(str)) {
 
         seen.add(str);
-        dfs(str.substring(1), A);
+        dfs(str.substring(1), A, k);
         edges.add(i);
 
       }
@@ -421,7 +426,6 @@ public class Main {
   }
 
 }
-
 
 
 
