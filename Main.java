@@ -1,8 +1,12 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
 // De Bruijn sequence generator and other things
 
 /**
  * Program Notes:
- * - consider passing k as argument to dfs() and numP...() so it's not recalculated on every loop 
  * - be pretty cool if it took a generic, but that's not really what I'm going for in this program 
  * - ^ shuffles in particular
  * - I use "shift" and "rotate" interchangeably
@@ -14,11 +18,6 @@
  * to things in list, checking them off as you go. With binary search, should be O(nlogn).
  * ...It's not elegant, not clever, but quite comprehensible, and not too slow. 
  */
-
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Vector;
 
 /**
  * yes
@@ -35,131 +34,32 @@ public class Main {
    */
   public static void main(String[] args) {
 
-    final String A = "01"; // Alphabet
+    final String A = "0123"; // Alphabet
     int k = A.length();
     int n = 4; // Window length
     
     DBGraph dbg = new DBGraph(A, n);
+    
+    //bigShuffleToSelf(A, n);
 
     System.out.println("For an alphabet \"" + A + "\" and window of " + n + ":");
     
-    System.out.println("There are " + numDBSequences(n, k) + " valid De Bruijn sequences");
+    System.out.println("\nThere are " + numDBSequences(n, k) + " valid De Bruijn sequences");
 
-    System.out.println("One such sequence: " + deBruijn(n, A, k));
 
-    System.out.println("All such sequences:");
-    dbg.printAllPaths();
+    //System.out.println("\nAll sequences:");
+    //dbg.printEulerian();
+    
+    //dbg.writeEulerian(-1);
+    
+    // System.out.println("\nOne such sequence:\n" + dbg.printEulerian(1)); // broken
 
-    // allRotShuffleToSelf(deBruijn(n, A));
     // allRotShuffleShiftToSelf("11101000");
     // allRotShuffleShiftToSelf("0111101011001000");
 
-    // dbg.printMatrix();    
+    // System.out.println("\nThe graph:");
+    // dbg.printMatrix();   
     
-  }
-
-  /**
-   * Calculates the number of possible De Bruijn sequences considering the given window size and
-   * alphabet length. Not very meaningful for even larger single digit values of n and k, due to the
-   * limited maximum integer length in Java, and the growth rate for this function.
-   * 
-   * @param n the window length
-   * @param k the alphabet length
-   * @return the number of possible sequences or roughly the largest possible value.
-   */
-  public static String numDBSequences(int n, int k) {
-
-    long l = (long) (Math.pow(factorial(k), Math.pow(k, n - 1)) / Math.pow(k, n));
-
-    if (l == Long.MAX_VALUE) {
-      return "over 9 pentillion";
-    }
-
-    return Long.toString(l);
-
-  }
-
-  static Set<String> seen = new HashSet<String>();
-  static Vector<Integer> edges = new Vector<Integer>();
-
-  /**
-   * Generates a single De Bruijn sequence, given a window size and an alphabet
-   * 
-   * @param n window size
-   * @param A alphabet, as String
-   * @return a valid De Bruijn sequence, as a String
-   * 
-   *         Adapted from https://www.geeksforgeeks.org/de-bruijn-sequence-set-1/
-   */
-  public static String deBruijn(int n, String A, int k) {
-
-    // [use .clear() method on seen and edges if will be used multiple times in this program]
-
-    String startingNode = string(n - 1, A.charAt(0));
-    dfs(startingNode, A, k);
-
-    String S = "";
-
-    int l = (int) Math.pow(k, n); // length of sequence/number of edges
-
-    for (int i = 0; i < l; ++i)
-      S += A.charAt(edges.get(i));
-
-    return S;
-
-  }
-
-  /**
-   * Recursive helper method to deBruijn(), Literally just a depth-first search where no edge is
-   * traversed twice (Euler Circuit style) Constructs graph of k^(n-1) nodes, k edges leaving each
-   * node
-   * 
-   * O(nodes + edges) I think --could be better
-   * 
-   * @param node
-   * @param A
-   * 
-   *             Adapted from https://www.geeksforgeeks.org/de-bruijn-sequence-set-1/
-   */
-  private static void dfs(String node, String A, int k) {
-
-    // iteratively add the alphabet to the string
-    // check each time if the string is now novel, if so, add it to the set of seen strings
-    // then make recursive call, passing in string just added to seen, but missing its first char
-
-    for (int i = 0; i < k; ++i) {
-
-      String str = node + A.charAt(i);
-
-      if (!seen.contains(str)) {
-
-        seen.add(str);
-        dfs(str.substring(1), A, k);
-        edges.add(i);
-
-      }
-
-    }
-
-  }
-
-  /**
-   * Helper method to deBruijn. Simply returns a string of the inputed character n times.
-   * 
-   * @param n      the number of times to copy the given char
-   * @param charAt the character to be copied
-   * @return a string with only the char charAt, copied n times.
-   * 
-   *         Adapted from https://www.geeksforgeeks.org/de-bruijn-sequence-set-1/
-   */
-  private static String string(int n, char charAt) {
-
-    String str = "";
-    for (int i = 0; i < n; i++)
-      str += charAt;
-
-    return str;
-
   }
 
   /**
@@ -191,6 +91,27 @@ public class Main {
     return false;
 
   }
+  
+  /**
+   * Calculates the number of possible De Bruijn sequences considering the given window size and
+   * alphabet length. Not very meaningful for even larger single digit values of n and k, due to the
+   * limited maximum integer length in Java, and the growth rate for this function.
+   * 
+   * @param n the window length
+   * @param k the alphabet length
+   * @return the number of possible sequences or roughly the largest possible value.
+   */
+  public static String numDBSequences(int n, int k) {
+
+    long l = (long) (Math.pow(factorial(k), Math.pow(k, n - 1)) / Math.pow(k, n));
+
+    if (l == Long.MAX_VALUE) {
+      return "over 9 pentillion";
+    }
+
+    return Long.toString(l);
+
+  }
 
   /**
    * A humble helper for numPossibleDBSequences(), as j.l.Math doesn't have a function for this
@@ -209,8 +130,37 @@ public class Main {
 
   }
 
+  public static void bigShuffleToSelf(String A, int n) {
+    
+    String filePath = A.length() + "-" + n + ".txt"; 
+    
+    try {
+      
+      BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
+      String line = bufferedReader.readLine();
+      
+      for (int i = 0; line != null; i++) {
+        
+        allRotShuffleToSelf(line, i);
+        
+        line = bufferedReader.readLine();
+        
+      }
+      
+      bufferedReader.close();
+      
+    } catch (FileNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    
+  }
+  
   /**
-   * Performs a perfect out shuffle, following the formula (length k, index i) : if (i < k/2): i ->
+   * Performs a perfect out shuffle, following the formula (length k, index i): if (i < k/2): i ->
    * 2i; if (i >= k/2): i -> 2i - k + 1
    * 
    * @param str the set to be shuffled
@@ -244,7 +194,7 @@ public class Main {
   }
 
   /**
-   * Performs a perfect in shuffle, following the formula (length k, index i) : if (i < k/2): i -> 2i
+   * Performs a perfect in shuffle, following the formula (length k, index i): if (i < k/2): i -> 2i
    * + 1; if (i >= k/2): i -> 2i - k
    * 
    * @param str the set to be shuffled
@@ -374,10 +324,7 @@ public class Main {
    * 
    * @param str
    */
-  private static void allRotShuffleToSelf(String str) {
-
-    System.out.println("\nFor the sequence " + str
-        + ",\nthe following right-shifts shuffle back to themselves:");
+  private static void allRotShuffleToSelf(String str, int j) {
 
     String rot;
     
@@ -386,10 +333,10 @@ public class Main {
       rot = rotateRight(str, i);
 
       if (outShufflesToSelf(rot))
-        System.out.println(rot + " (" + i + ") " + "- OUT");
+        System.out.println(j + ": " + rot + " - OUT");
 
       if (inShufflesToSelf(rot))
-        System.out.println(rot + " (" + i + ") " + " - IN");
+        System.out.println(j + ":" + rot + " - IN");
 
     }
 

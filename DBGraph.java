@@ -5,9 +5,7 @@ import java.io.IOException;
 /**
  * Represents a De Bruijn Graph.
  * 
- * Limitations:
- * - Alphabet input is limited to 0-9
- * - Alphabet must start at 0, increment from there
+ * Limitations: - Alphabet input is limited to 0-9 - Alphabet must start at 0, increment from there
  * 
  * - The only bottleneck on output appears to be stack size (or stack consumption)
  * 
@@ -20,7 +18,7 @@ public class DBGraph {
   private int n; // window size
   private int numNodes; // The number of nodes in the tree
   private BufferedWriter bufferedWriter;
-  
+
   private int seqLimit; // Max number of sequences outputed
   private int o; // Number of sequences outputed
 
@@ -190,20 +188,22 @@ public class DBGraph {
   }
 
   /**
-   * Write all paths to text file
+   * Write all paths to text file.
    * 
-   * @param mb the desired size of the output file, in MB (-1 for unlimited)
+   * Warning: program terminates if the inputed maximum file size is reached.
+   * 
+   * @param mb the desired maximum size of the output file, in MB (-1 for unlimited)
    */
   public void writeEulerian(double mb) {
 
     seqLimit = (int) ((1024 * 1024 * mb) / Math.pow(k, n));
     o = 0;
-    
+
     String fileName = k + "-" + n + ".txt";
     int bufferSize = 1024 * 1024; // (1MB) (Best to multiples of 1024B)
-    
+
     String path = "0";
-    
+
     boolean[][] isVisited = new boolean[numNodes][numNodes];
 
     for (int i = 0; i < numNodes; i++)
@@ -211,9 +211,9 @@ public class DBGraph {
         isVisited[i][j] = false;
 
     try {
-      
+
       bufferedWriter = new BufferedWriter(new FileWriter(fileName), bufferSize);
-      
+
       writeEulerianUtil(0, 0, isVisited, path); // Calls recursive traversal
 
       bufferedWriter.close(); // Flushes/closes the stream
@@ -244,9 +244,9 @@ public class DBGraph {
       if (o == seqLimit) {
         System.exit(0);
       }
-      
+
       o++;
-      
+
       path += "\n";
 
       try {
