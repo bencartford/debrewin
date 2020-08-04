@@ -1,5 +1,15 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 /**
- * Represents a De Bruijn Graph
+ * Represents a De Bruijn Graph.
+ * 
+ * Limitations:
+ * - Alphabet input is limited to 0-9
+ * - Alphabet must start at 0, increment from there
+ * 
+ * - The only bottleneck on output appears to be stack size (or stack consumption)
  * 
  * @author Reed Nelson
  */
@@ -9,6 +19,10 @@ public class DBGraph {
   private int k; // Alphabet size
   private int n; // window size
   private int numNodes; // The number of nodes in the tree
+  private BufferedWriter bufferedWriter;
+  
+  private int seqLimit; // Max number of sequences outputed
+  private int o; // Number of sequences outputed
 
   /**
    * Sets up the DBGraph object
@@ -119,7 +133,7 @@ public class DBGraph {
   /**
    * Prints all paths
    */
-  public void printAllPaths() {
+  public void printEulerian() {
 
     boolean[][] isVisited = new boolean[numNodes][numNodes];
 
@@ -130,7 +144,7 @@ public class DBGraph {
     String path = "0";
 
 
-    printAllPathsUtil(0, 0, isVisited, path);
+    printEulerianUtil(0, 0, isVisited, path);
 
   }
 
@@ -142,7 +156,7 @@ public class DBGraph {
    * @param isVisited keeps track of vertices in current path
    * @param path      String of edges traversed on current path
    */
-  private void printAllPathsUtil(int u, int v, boolean[][] isVisited, String path) {
+  private void printEulerianUtil(int u, int v, boolean[][] isVisited, String path) {
 
     isVisited[u][v] = true;
 
@@ -163,7 +177,97 @@ public class DBGraph {
       if (!isVisited[adjMatrix[u][i]][u]) {
 
         path += i; // store current edge in path
-        printAllPathsUtil(adjMatrix[u][i], u, isVisited, path);
+        printEulerianUtil(adjMatrix[u][i], u, isVisited, path);
+
+        path = path.substring(0, path.length() - 1); // remove current edge from the path
+
+      }
+
+    }
+
+    isVisited[u][v] = false;
+
+  }
+
+  /**
+   * Write all paths to text file
+   * 
+   * @param mb the desired size of the output file, in MB (-1 for unlimited)
+   */
+  public void writeEulerian(double mb) {
+
+    seqLimit = (int) ((1024 * 1024 * mb) / Math.pow(k, n));
+    o = 0;
+    
+    String fileName = k + "-" + n + ".txt";
+    int bufferSize = 1024 * 1024; // (1MB) (Best to multiples of 1024B)
+    
+    String path = "0";
+    
+    boolean[][] isVisited = new boolean[numNodes][numNodes];
+
+    for (int i = 0; i < numNodes; i++)
+      for (int j = 0; j < numNodes; j++)
+        isVisited[i][j] = false;
+
+    try {
+      
+      bufferedWriter = new BufferedWriter(new FileWriter(fileName), bufferSize);
+      
+      writeEulerianUtil(0, 0, isVisited, path); // Calls recursive traversal
+
+      bufferedWriter.close(); // Flushes/closes the stream
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+
+
+  }
+
+  /**
+   * A recursive function to print all paths from the current vertex (u) to the starting vertex.
+   * 
+   * @param u         current (unvisited) vertex
+   * @param v         previous (visited) vertex
+   * @param isVisited keeps track of vertices in current path
+   * @param path      String of edges traversed on current path
+   */
+  private void writeEulerianUtil(int u, int v, boolean[][] isVisited, String path) {
+
+    isVisited[u][v] = true;
+
+    // Base-ish case
+    if (u == 0 && path.length() == Math.pow(k, n)) {
+
+      if (o == seqLimit) {
+        System.exit(0);
+      }
+      
+      o++;
+      
+      path += "\n";
+
+      try {
+        bufferedWriter.write(path); // send to buffer stream
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
+      isVisited[u][v] = false;
+
+      return;
+
+    }
+
+    // Recurse for all the vertices adjacent to current vertex
+    for (int i = 0; i < k; i++) {
+
+      if (!isVisited[adjMatrix[u][i]][u]) {
+
+        path += i; // store current edge in path
+        writeEulerianUtil(adjMatrix[u][i], u, isVisited, path);
 
         path = path.substring(0, path.length() - 1); // remove current edge from the path
 
@@ -177,4 +281,5 @@ public class DBGraph {
 
 
 }
+
 
