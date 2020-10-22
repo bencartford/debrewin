@@ -1,0 +1,83 @@
+totalNewSequences = []
+
+def append_list_of_total_new_seq(ar):
+    return totalNewSequences.append(ar[:])
+
+def generateAllBinaryStrings(n, arr, i):
+    if i == n:
+        append_list_of_total_new_seq(arr)
+        #if len(totalNewSequences) > 1953124:
+        #    print(totalNewSequences)
+        return
+    arr[i] = 1
+    generateAllBinaryStrings(n, arr, i + 1)
+    arr[i] = 2
+    generateAllBinaryStrings(n, arr, i + 1)
+    arr[i] = 3
+    generateAllBinaryStrings(n, arr, i + 1)
+    arr[i] = 4
+    generateAllBinaryStrings(n, arr, i + 1)
+    arr[i] = 5
+    generateAllBinaryStrings(n, arr, i + 1)
+    arr[i] = 6
+    generateAllBinaryStrings(n, arr, i + 1)
+    arr[i] = 7
+    generateAllBinaryStrings(n, arr, i + 1)
+
+initialArray = [None] * 13
+generateAllBinaryStrings(13, initialArray, 0)
+print(totalNewSequences)
+print(len(totalNewSequences))
+
+d = []
+def dbChecker(biglist):
+    for lst in biglist:
+        a = []
+        for i in range(len(lst)):
+            if i < len(lst) - 1:
+                a.append(lst[i] + lst[i +1])
+            else:
+                a.append(lst[i] + lst[0])
+        b = []
+        for i in range(len(a)):
+            if a[i] not in b:
+                b.append(a[i])
+            else:
+                break
+        if len(b) == 13:
+            d.append(lst)
+    return d
+
+print(dbChecker(totalNewSequences))
+n = []
+def refine(d):
+    for lst in d:
+        for i in range(len(lst)):
+            lst.append(lst.pop(i))
+            if lst in n:
+                d.remove(lst)
+                break
+            n.append(lst)
+            print(lst)
+    return d
+print(refine(d))
+e= []
+def reorder(d):
+    for lst in d:
+        while lst[0] + lst[1] > 2:
+            lst.append(lst.pop(0))
+        e.append(lst)
+    return e
+
+print(reorder(d))
+
+def doublecheck(e):
+    f = []
+    for i in e:
+        if i not in f:
+            f.append(i)
+    return f
+
+
+print(doublecheck(e))
+print(len(doublecheck(e)))
