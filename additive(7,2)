@@ -35,7 +35,7 @@ def dbChecker(biglist):
         a = []
         for i in range(len(lst)):
             if i < len(lst) - 1:
-                a.append(lst[i] + lst[i +1])
+                a.append(lst[i] + lst[i + 1])
             else:
                 a.append(lst[i] + lst[0])
         b = []
@@ -50,9 +50,11 @@ def dbChecker(biglist):
 
 print(dbChecker(totalNewSequences))
 n = []
+h = []
 def refine(d):
-    for lst in d:
-        for i in range(len(lst)):
+    d = h
+    for lst in h:
+        for i in range(len(lst)): #could be this and 58
             lst.append(lst.pop(i))
             if lst in n:
                 d.remove(lst)
@@ -60,24 +62,34 @@ def refine(d):
             n.append(lst)
             print(lst)
     return d
+
 print(refine(d))
-e= []
+print(len(d))
+
+e = []
 def reorder(d):
     for lst in d:
         while lst[0] + lst[1] > 2:
             lst.append(lst.pop(0))
         e.append(lst)
     return e
-
 print(reorder(d))
+print("this is length d: " + str(len(d)))
 
 def doublecheck(e):
     f = []
     for i in e:
         if i not in f:
             f.append(i)
+    print(len(f))
     return f
 
+#
+# def sorter(lst):
+#     x = []
+#     for i in lst:
+#         i.sort()
+#         x.append(i)
+#     return x
 
-print(doublecheck(e))
-print(len(doublecheck(e)))
+print((doublecheck(e)))
