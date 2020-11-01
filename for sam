@@ -1,0 +1,111 @@
+#this is for the 5,2 - meaning the length is nine and the alphabet is 1-5. the 7,2 length would be 13 and the alphabet would be 1-7. so, the list of sums for the 7,2 would be [2,3,4,5,6,7,8,9,10,11,12,13,14]
+from itertools import permutations
+
+perm = permutations([2,3,4,5,6,7,8,9,10])
+res = [list(i) for i in perm]
+
+a = [] 
+def rotatedperms(lst): #rotates so they start with the element 2
+    for i in lst:
+        for j in range(len(i)):
+            while i[0] != 2:
+                i.append(i.pop(j))
+    return res
+
+# print(rotatedperms(res))
+print(len(rotatedperms(res)))
+
+
+listodifferences = []
+
+def initremover(res): #gets rid of sum lists that would be unachievable
+    for lst in res:
+        differences = []
+        for i in range(len(lst)):
+            if i < len(lst) -1:
+                if abs(lst[i + 1] - lst[i]) > 5:
+                    break
+                differences.append((lst[i + 1] - lst[i]))
+            if i == len(lst) - 1:
+                if abs(lst[i] - lst[0]) > 5:
+                    break
+                differences.append(lst[i] - lst[0])
+        if len(differences) == 9:
+            listodifferences.append(lst)
+    return listodifferences
+
+print((initremover(res)))
+# 112234455
+# 2 3 4 5 7 8 9 10 6
+sequences = []
+def maker(lst): #creates actual sequences
+    for lst in listodifferences:
+        newlist= [1,1]
+        for i in range(1, len(lst) - 1):
+            if i < len(lst) -1:
+                newlist.append(lst[i] - newlist[-1])
+            else:
+                 newlist.append(lst[0] - newlist[-1])
+            if len(newlist) == 9:
+                sequences.append(newlist)
+    return sequences
+
+print(maker(listodifferences))
+
+b = []
+def siftmade(lst): #keeps ones with correct sum
+    for lst in sequences:
+        if sum(lst) == 27:
+            b.append(lst)
+    return b
+
+print(siftmade(sequences))
+c =[]
+def noneg(b): # no negatives
+    for lst in b:
+        for i in range(len(lst)):
+            if lst[i] < 1 or lst[i] > 5:
+                break
+            if i == len(lst) - 1:
+                c.append(lst)
+    return c
+
+print((noneg(b)))
+
+
+n = []
+h = []
+def refine(d): #rotates and checks to remove dup
+    c = h
+    for lst in h:
+        for i in range(len(lst)): 
+            lst.append(lst.pop(i))
+            if lst in n:
+                c.remove(lst)
+                break
+            n.append(lst)
+            print(lst)
+    return c
+
+print(refine(c))
+print(len(c))
+
+e = []
+def reorder(d): #makes sequences start with 1,1
+    for lst in d:
+        while lst[0] + lst[1] > 2:
+            lst.append(lst.pop(0))
+        e.append(lst)
+    return e
+print(reorder(c))
+print("this is length d: " + str(len(c)))
+
+def doublecheck(e): remove duplicates
+    f = []
+    for i in e:
+        if i not in f:
+            f.append(i)
+    print(len(f))
+    return f
+
+print(len(doublecheck(e))) #done
