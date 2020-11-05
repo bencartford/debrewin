@@ -1,95 +1,125 @@
-totalNewSequences = []
+from itertools import permutations
 
-def append_list_of_total_new_seq(ar):
-    return totalNewSequences.append(ar[:])
-
-def generateAllBinaryStrings(n, arr, i):
-    if i == n:
-        append_list_of_total_new_seq(arr)
-        #if len(totalNewSequences) > 1953124:
-        #    print(totalNewSequences)
-        return
-    arr[i] = 1
-    generateAllBinaryStrings(n, arr, i + 1)
-    arr[i] = 2
-    generateAllBinaryStrings(n, arr, i + 1)
-    arr[i] = 3
-    generateAllBinaryStrings(n, arr, i + 1)
-    arr[i] = 4
-    generateAllBinaryStrings(n, arr, i + 1)
-    arr[i] = 5
-    generateAllBinaryStrings(n, arr, i + 1)
-    arr[i] = 6
-    generateAllBinaryStrings(n, arr, i + 1)
-    arr[i] = 7
-    generateAllBinaryStrings(n, arr, i + 1)
-
-initialArray = [None] * 13
-generateAllBinaryStrings(13, initialArray, 0)
-print(totalNewSequences)
-print(len(totalNewSequences))
-
-d = []
-def dbChecker(biglist):
-    for lst in biglist:
-        a = []
+perm = permutations([2,3,4,5,6,7,8,9,10,11,12,13,14])
+res = []
+def permsift(perm):
+    for lst in perm:
+        mini = []
         for i in range(len(lst)):
-            if i < len(lst) - 1:
-                a.append(lst[i] + lst[i + 1])
-            else:
-                a.append(lst[i] + lst[0])
-        b = []
-        for i in range(len(a)):
-            if a[i] not in b:
-                b.append(a[i])
-            else:
-                break
-        if len(b) == 13:
-            d.append(lst)
-    return d
+            if i < len(lst) -1:
+                if abs(lst[i + 1] - lst[i]) > 7:
+                    break
+                mini.append((lst[i + 1] - lst[i]))
+            if i == len(lst) - 1:
+                if abs(lst[i] - lst[0]) > 7:
+                    break
+                mini.append(lst[i] - lst[0])
+        if len(mini) == 13:
+            res.append(list(lst))
+    return res
 
-print(dbChecker(totalNewSequences))
+print(len(permsift(perm)))
+
+a = []
+def rotatedperms(lst):
+    for i in lst:
+        for j in range(len(i)):
+            while i[0] != 2:
+                i.append(i.pop(j))
+    return res
+
+# print(rotatedperms(res))
+print(len(rotatedperms(res)))
+
+
+listodifferences = []
+
+# def initremover(res):
+#     for lst in res:
+#         differences = []
+#         for i in range(len(lst)):
+#             if i < len(lst) -1:
+#                 if abs(lst[i + 1] - lst[i]) > 5:
+#                     break
+#                 differences.append((lst[i + 1] - lst[i]))
+#             if i == len(lst) - 1:
+#                 if abs(lst[i] - lst[0]) > 5:
+#                     break
+#                 differences.append(lst[i] - lst[0])
+#         if len(differences) == 9:
+#             listodifferences.append(lst)
+#     return listodifferences
+#
+# print((initremover(res)))
+# 112234455
+# 2 3 4 5 7 8 9 10 6
+sequences = []
+def maker(lst):
+    for lst in res:
+        newlist= [1,1]
+        for i in range(1, len(lst) - 1):
+            if i < len(lst) -1:
+                newlist.append(lst[i] - newlist[-1])
+            else:
+                 newlist.append(lst[0] - newlist[-1])
+            if len(newlist) == 13:
+                sequences.append(newlist)
+    return sequences
+
+print(len(maker(res)))
+
+b = []
+def siftmade(lst):
+    for lst in sequences:
+        if sum(lst) == 52:
+            b.append(lst)
+    return b
+
+print(len(siftmade(sequences)))
+c =[]
+def noneg(b):
+    for lst in b:
+        for i in range(len(lst)):
+            if lst[i] < 1 or lst[i] > 7:
+                break
+            if i == len(lst) - 1:
+                c.append(lst)
+    return c
+
+print(len(noneg(b)))
+
 n = []
 h = []
 def refine(d):
-    d = h
+    c = h
     for lst in h:
         for i in range(len(lst)): #could be this and 58
             lst.append(lst.pop(i))
             if lst in n:
-                d.remove(lst)
+                c.remove(lst)
                 break
             n.append(lst)
             print(lst)
-    return d
+    return c
 
-print(refine(d))
-print(len(d))
+# print(refine(c))
+print(len(c))
 
 e = []
-def reorder(d):
-    for lst in d:
+def reorder(c):
+    for lst in c:
         while lst[0] + lst[1] > 2:
             lst.append(lst.pop(0))
         e.append(lst)
     return e
-print(reorder(d))
-print("this is length d: " + str(len(d)))
+print(len(reorder(c)))
+# print("this is length d: " + str(len(c)))
 
 def doublecheck(e):
     f = []
     for i in e:
         if i not in f:
             f.append(i)
-    print(len(f))
     return f
 
-#
-# def sorter(lst):
-#     x = []
-#     for i in lst:
-#         i.sort()
-#         x.append(i)
-#     return x
-
-print((doublecheck(e)))
+print(len(doublecheck(e)))
