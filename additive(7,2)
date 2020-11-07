@@ -115,11 +115,12 @@ def reorder(c):
 print(len(reorder(c)))
 # print("this is length d: " + str(len(c)))
 
+f = []
 def doublecheck(e):
-    f = []
     for i in e:
         if i not in f:
             f.append(i)
     return f
 
-print(len(doublecheck(e)))
+print((doublecheck(e)))
+print(len(f))
